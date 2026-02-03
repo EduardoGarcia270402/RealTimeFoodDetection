@@ -91,6 +91,11 @@
                 </div>
 
                 <div class="form-group">
+                    <label>Peso objetivo (kg)</label>
+                    <input id="target_weight" class="form-control" type="number">
+                </div>
+
+                <div class="form-group">
                     <label>Tipo</label>
                     <select id="type" class="form-control">
                         <option value="normal">Natural</option>
@@ -136,14 +141,37 @@
     });
 
     function saveProfile() {
+        const height = document.getElementById("height").value;
+        const weight = document.getElementById("weight").value;
+        const target = document.getElementById("target_weight").value;
+
+        if (!height || !weight || !target) {
+            alert("⚠️ Completa todos los campos del perfil");
+            return;
+        }
+
+        const data = {
+            height: height,
+            weight: weight,
+            target_weight: target,
+            type: document.getElementById("type").value
+        };
+
+        console.log("📤 Enviando perfil:", data);
+
         fetch("/update_profile", {
             method: "POST",
             headers: {"Content-Type": "application/json"},
-            body: JSON.stringify({
-                height: document.getElementById("height").value,
-                weight: document.getElementById("weight").value,
-                type: document.getElementById("type").value
-            })
+            body: JSON.stringify(data)
+        })
+        .then(res => res.json())
+        .then(resp => {
+            console.log("✅ Respuesta:", resp);
+            alert("Perfil guardado correctamente");
+        })
+        .catch(err => {
+            console.error("❌ Error:", err);
+            alert("Error al guardar perfil");
         });
     }
 </script>

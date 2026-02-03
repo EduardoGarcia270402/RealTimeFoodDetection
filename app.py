@@ -14,13 +14,8 @@ socketio = SocketIO(app, cors_allowed_origins="*")
 # Cargar modelo
 model = YOLO("model/food_detector_small.pt")
 
-# Perfil de usuario (por ahora fijo, luego lo puedes hacer dinámico)
+# Perfil de usuario (vacío al inicio)
 user = UserProfile()
-user.height = 175     # cm
-user.weight = 75      # kg
-user.type = "sport"   # normal | sport | fighter
-user.calculate_daily_calories()
-
 
 def generate_frames():
     camera = cv2.VideoCapture(0, cv2.CAP_DSHOW)
@@ -78,7 +73,29 @@ def generate_frames():
 def index():
     return render_template("index.html")
 
+@app.route("/update_profile", methods=["POST"])
+def update_profile():
+    data = request.json
 
+    try:
+        user.height = int(float(data["height"]) * 100)  # metros → cm
+        user.weight = int(data["weight"])
+        user.target_weight = int(data["target_weight"])
+        user.type = data["type"]
+
+        user.calculate_daily_calories()
+
+        print("👤 PERFIL GUARDADO:", vars(user))
+
+        return jsonify({
+            "status": "ok",
+            "goal": user.goal,
+            "daily_calories": user.daily_calories
+        })
+
+    except Exception as e:
+        print("❌ ERROR update_profile:", e)
+        return jsonify({"status": "error", "msg": str(e)}), 400
 
 @app.route("/video_feed")
 def video_feed():
