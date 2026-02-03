@@ -1,186 +1,152 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Webcam Streaming</title>
+    <title>🥗 Evaluador Nutricional Inteligente</title>
+
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
+
     <style>
-        body {
-            padding-top: 50px;
+        body { background: #f4f6f8; }
+        .panel {
+            background: white;
+            border-radius: 10px;
+            padding: 15px;
+            height: 85vh;
+            overflow-y: auto;
+        }
+        .food-card img {
+            width: 100%;
+            border-radius: 8px;
         }
         #video-feed {
             width: 100%;
-            max-width: 600px;
-            margin: auto;
-            display: block;
+            border-radius: 10px;
+            border: 3px solid #333;
         }
-        .container {
-            text-align: center;
-        }
-        .menu-section {
-            margin-top: 20px;
-        }
-        .btn-custom {
-            margin: 5px;
+        pre {
+            background: #f8f9fa;
+            padding: 10px;
+            border-radius: 8px;
         }
     </style>
 </head>
+
 <body>
-    <div class="container">
-        <h1 class="mb-4">Realtime Food Recognition</h1>
-        <button id="toggle-stream" class="btn btn-primary btn-custom">Start Stream</button>
-        <button id="toggle-menu" class="btn btn-secondary btn-custom">Show Menu</button>
-        <button id="confirm" class="btn btn-success btn-custom">Confirm</button>
-        <div>
-            <img id="video-feed" src="" style="display: none;">
-        </div>
-        <h2 class="mt-4">Total Price: $<span id="price">0</span></h2>
+<div class="container-fluid mt-4">
+    <div class="row">
 
-        <!-- Menu -->
-        <div class="menu-section">
-            <h2 id="menu-title" style="display: none;">Menu</h2>
-            <ul id="menu" class="list-group" style="display: none;">
-                <!-- Menu items -->
-            </ul>
-        </div>
-
-        <!-- Bills -->
-        <div id="bills" class="mt-5">
-            <h2>Bills</h2>
-            <!-- Bills list -->
-        </div>
-    </div>
-
-    <!-- Error Modal -->
-    <div class="modal fade" id="errorModal" tabindex="-1" role="dialog" aria-labelledby="errorModalLabel" aria-hidden="true">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="errorModalLabel">Error</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
+        <!-- 🟩 MENÚ -->
+        <div class="col-md-3">
+            <div class="panel">
+                <h4>🍽️ Menú</h4>
+                <div class="food-card mb-3">
+                    <img src="/static/images/banana.jpg">
+                    Banana
                 </div>
-                <div class="modal-body">
-                    No food was detected. Please try again.
+                <div class="food-card mb-3">
+                    <img src="/static/images/pizza.jpg">
+                    Pizza
                 </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <div class="food-card mb-3">
+                    <img src="/static/images/rice.jpg">
+                    Arroz Blanco
+                </div>
+                <div class="food-card mb-3">
+                    <img src="/static/images/chicken.jpg">
+                    Pechuga de Pollo
+                </div>
+                <div class="food-card mb-3">
+                    <img src="/static/images/salad.jpg">
+                    Ensalada
                 </div>
             </div>
         </div>
-    </div>
 
-    <script>
-        var socket = io.connect('http://' + document.domain + ':' + location.port);
-        var isStreaming = false;
-        var billNumber = 1;
-        var detectedItems = {};
+        <!-- 🟦 CÁMARA -->
+        <div class="col-md-6 text-center">
+            <div class="panel">
+                <h4>📷 Detección en Tiempo Real</h4>
+                <button id="toggle-stream" class="btn btn-primary mb-3">
+                    Iniciar Cámara
+                </button>
+                <img id="video-feed" style="display:none;">
+            </div>
+        </div>
 
-        document.getElementById("toggle-stream").addEventListener("click", function() {
-            if (isStreaming) {
-                stopStream();
-            } else {
-                startStream();
-            }
-        });
+        <!-- 🟨 PERFIL + PLN -->
+        <div class="col-md-3">
+            <div class="panel">
+                <h4>🧠 Perfil del Usuario</h4>
 
-        document.getElementById("toggle-menu").addEventListener("click", function() {
-            toggleMenu();
-        });
-
-        document.getElementById("confirm").addEventListener("click", function() {
-            confirmBill();
-        });
-
-        socket.on('update_price', function(data) {
-            document.getElementById("price").innerText = data.price;
-            detectedItems = data.items;  // Update detected items
-        });
-
-        function startStream() {
-            document.getElementById("video-feed").src = "/video_feed";
-            document.getElementById("video-feed").style.display = "block";
-            document.getElementById("toggle-stream").innerText = "Stop Stream";
-            isStreaming = true;
-        }
-
-        function stopStream() {
-            document.getElementById("video-feed").src = "";
-            document.getElementById("video-feed").style.display = "none";
-            document.getElementById("toggle-stream").innerText = "Start Stream";
-            isStreaming = false;
-        }
-
-        // Menu items and prices
-        var menuItems = {
-            'banana': 5,
-            'black beans': 4,
-            'grilled chicken breast': 7,
-            'milk': 2,
-            'orange juice': 3,
-            'pizza': 8,
-            'potato': 3,
-            'salad': 5,
-            'spaghetti': 10,
-            'white rice': 5
-        };
-
-        function displayMenu() {
-            var menuList = document.getElementById("menu");
-            menuList.innerHTML = ''; 
-            for (var item in menuItems) {
-                var listItem = document.createElement("li");
-                listItem.className = "list-group-item";
-                listItem.innerText = item + ": $" + menuItems[item];
-                menuList.appendChild(listItem);
-            }
-        }
-
-        function toggleMenu() {
-            var menuTitle = document.getElementById("menu-title");
-            var menuList = document.getElementById("menu");
-            if (menuList.style.display === "none") {
-                displayMenu();
-                menuTitle.style.display = "block";
-                menuList.style.display = "block";
-                document.getElementById("toggle-menu").innerText = "Hide Menu";
-            } else {
-                menuTitle.style.display = "none";
-                menuList.style.display = "none";
-                document.getElementById("toggle-menu").innerText = "Show Menu";
-            }
-        }
-
-        function confirmBill() {
-            if (Object.keys(detectedItems).length === 0) {
-                $('#errorModal').modal('show');
-                return;
-            }
-
-            var price = document.getElementById("price").innerText;
-            var billContent = document.createElement("div");
-            billContent.className = "card mt-3";
-            var itemsList = "";
-            for (var item in detectedItems) {
-                itemsList += `${item}: $${menuItems[item]} x ${detectedItems[item]}<br>`;
-            }
-            billContent.innerHTML = `
-                <div class="card-body">
-                    <h5 class="card-title">Bill #${billNumber}</h5>
-                    <p class="card-text">${itemsList}</p>
-                    <p class="card-text">Total Price: $${price}</p>
+                <div class="form-group">
+                    <label>Altura (cm)</label>
+                    <input id="height" class="form-control" type="number">
                 </div>
-            `;
-            document.getElementById("bills").appendChild(billContent);
-            billNumber++;
-        }
-    </script>
 
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+                <div class="form-group">
+                    <label>Peso (kg)</label>
+                    <input id="weight" class="form-control" type="number">
+                </div>
+
+                <div class="form-group">
+                    <label>Tipo</label>
+                    <select id="type" class="form-control">
+                        <option value="normal">Natural</option>
+                        <option value="sport">Deportista</option>
+                        <option value="fighter">Peleador</option>
+                    </select>
+                </div>
+
+                <button class="btn btn-success mb-3" onclick="saveProfile()">
+                    Guardar Perfil
+                </button>
+
+                <h5>📊 Recomendación</h5>
+                <pre id="nutrition-text">Esperando detección...</pre>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<script>
+    const socket = io();
+    let streaming = false;
+
+    document.getElementById("toggle-stream").onclick = () => {
+        const video = document.getElementById("video-feed");
+
+        if (!streaming) {
+            video.src = "/video_feed";
+            video.style.display = "block";
+            streaming = true;
+            event.target.innerText = "Detener Cámara";
+        } else {
+            video.src = "";
+            video.style.display = "none";
+            streaming = false;
+            event.target.innerText = "Iniciar Cámara";
+        }
+    };
+
+    socket.on("nutrition_update", data => {
+        document.getElementById("nutrition-text").innerText = data.nutrition;
+    });
+
+    function saveProfile() {
+        fetch("/update_profile", {
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify({
+                height: document.getElementById("height").value,
+                weight: document.getElementById("weight").value,
+                type: document.getElementById("type").value
+            })
+        });
+    }
+</script>
+
 </body>
 </html>

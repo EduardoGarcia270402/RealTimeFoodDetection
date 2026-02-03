@@ -47,17 +47,6 @@ This ensures that users can see the price in real-time as they place more items 
 3. **Web Application**: Flask for creating the web interface and streaming the video feed.
 4. **Real-Time Updates**: Flask-SocketIO for updating the price dynamically based on detected items.
 
-## 📹 Demo Video
-Watch the demo video below to see the Real-Time Food Detection System in action:
-[![IMAGE ALT TEXT HERE](https://img.youtube.com/vi/4eRQTrln_ag/0.jpg)](https://www.youtube.com/watch?v=4eRQTrln_ag)
-
-Actual setup during video recording:
-
-<div style="text-align: center;">
-    <img src="https://github.com/enricollen/RealTimeFoodDetection/blob/main/screenshots/setup_1.jpg?raw=true" alt="setup_1" width="200" height="300">
-    <img src="https://github.com/enricollen/RealTimeFoodDetection/blob/main/screenshots/setup_2.jpg?raw=true" alt="setup_2" width="200" height="300">
-</div>
-
 ## 🛠️ Setup and Local Deployment
 - Clone the repository and navigate to the project directory.
 - Install dependencies: `pip install -r requirements.txt`
