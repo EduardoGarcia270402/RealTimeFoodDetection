@@ -1,56 +1,87 @@
-# 🍽️ Real-Time Food Detection System
-This project was inspired by some innovative restaurant payment methods i've seen around, which implement real-time object detection to determine the price to pay.
+# 🥗🍽️ Sistema Inteligente de Recomendación Nutricional con Visión por Computadora
 
-I tried to recreate a similar system, developed as a simple web application using Flask, where the backbone network is a [YOLOv8](https://docs.ultralytics.com/) model, which i fine-tuned on food images. 
+Este proyecto consiste en el desarrollo de un sistema inteligente que combina **visión por computadora** y **procesamiento de lenguaje natural (PLN)** para detectar alimentos en tiempo real y generar **recomendaciones nutricionales personalizadas**. El sistema está orientado principalmente a deportistas, especialmente peleadores de artes marciales mixtas (MMA/UFC), durante procesos de control y corte de peso.
 
-The price is adjusted in real-time as the webcam detects one or more food items, and the price tag is updated accordingly.
+La aplicación fue desarrollada como una aplicación web utilizando **Flask**, integrando un modelo **YOLO** para la detección automática de alimentos a través de imágenes o cámara web, y un sistema experto que analiza el impacto nutricional de los alimentos detectados.
 
-<img src="https://github.com/enricollen/RealTimeFoodDetection/blob/main/screenshots/real_example.jpg?raw=true" alt="interface" width="500" height="550">
+---
 
-## 🥗 Menu
-Here is the list of food items that the system can detect along with their corresponding prices:
+## 🎯 Objetivo del Sistema
 
-- **Banana**: $5
-- **Black Beans**: $4
-- **Grilled Chicken Breast**: $7
-- **Milk**: $2
-- **Orange Juice**: $3
-- **Pizza**: $8
-- **Potato**: $3
-- **Salad**: $5
-- **Spaghetti**: $10
-- **White Rice**: $5
+El objetivo principal del sistema es apoyar la toma de decisiones alimenticias mediante el reconocimiento automático de alimentos y la generación de recomendaciones nutricionales basadas en el perfil del usuario y su objetivo físico (corte de peso, mantenimiento o ganancia).
 
-These food classes are just the ones contained in the '[Food Detection Image Dataset](https://universe.roboflow.com/food-hofna/food-detection-fme3o/dataset/8)', that i used for fine-tuning the YOLO model. 
-However, it is fully customizable for personal use if someone wants to create a personal food dataset.
+El sistema no busca reemplazar a un profesional de la salud, sino brindar una **guía informativa y tecnológica** que facilite el control nutricional diario.
 
-## 🎥 Webcam Integration
-- **Logic**: Capture real-time video feed from the webcam and detect food items.
-- **Realtime Streaming**: Stream video feed to the web browser.
+---
 
-This system uses a webcam to capture real-time video feed, which is then processed by a YOLOv8 model fine-tuned on food images. The model detects food items with a confidence threshold of 0.5 and calculates the total price based on the detected items. For instance, a detected 'spaghetti' adds $10 to the total, while a 'orange juice' adds $3.
+## 🥦 Alimentos Detectables
 
-## 💲 Price Calculation
-- **Logic**: Calculate the total price based on detected items.
-- **Detected Items**: Update price in real-time as new items are detected.
+El sistema puede detectar los siguientes alimentos, los cuales forman parte de una base de conocimiento nutricional:
 
-Users can press "Confirm" to generate a bill containing the price of each item detected along with the total price. The "Menu" button allows users to visualize the food list along with the associated prices.
+- **Banana**
+- **Black Beans**
+- **Grilled Chicken Breast**
+- **Milk**
+- **Orange Juice**
+- **Pizza**
+- **Potato**
+- **Salad**
+- **Spaghetti**
+- **White Rice**
 
-## 📊 Video Visualization
-The web application streams the video feed to the front end with bounding boxes and labels showing the detected items and their confidence scores, and updates the total price dynamically.
+Cada alimento cuenta con información asociada como calorías, macronutrientes, beneficios, desventajas y un menú sugerido, lo que permite generar recomendaciones más completas.
 
-This ensures that users can see the price in real-time as they place more items in front of the camera.
+---
 
-## 🏗️ System Architecture
-1. **Video Capture**: Using OpenCV to capture video from the webcam.
-2. **Model**: YOLOv8 fine-tuned on food images.
-3. **Web Application**: Flask for creating the web interface and streaming the video feed.
-4. **Real-Time Updates**: Flask-SocketIO for updating the price dynamically based on detected items.
+## 🧠 Sistema de Recomendación Nutricional
 
-## 🛠️ Setup and Local Deployment
-- Clone the repository and navigate to the project directory.
-- Install dependencies: `pip install -r requirements.txt`
-- Run the application: `python app.py`
-- Navigate to `http://localhost:5000/`
+Una vez detectados los alimentos, el sistema evalúa su impacto nutricional utilizando reglas semánticas y una ponderación definida para cada clase. Las recomendaciones se generan considerando:
 
-(if you enjoyed this content please consider leaving a star ⭐)
+- Perfil del usuario (peso, estatura, objetivo)
+- Calorías aproximadas
+- Beneficios y contras del alimento
+- Compatibilidad con el objetivo físico del usuario
+
+El resultado es una recomendación clara y entendible que apoya el control alimenticio del deportista.
+
+---
+
+## 🎥 Visión por Computadora y Funcionamiento
+
+- **Captura de Video**: Uso de OpenCV para capturar imágenes desde la cámara o archivos locales.
+- **Detección**: Modelo YOLO entrenado para reconocer alimentos en tiempo real.
+- **Visualización**: Se muestran bounding boxes, nombres de alimentos y resultados del análisis nutricional.
+- **Interacción**: El usuario puede ingresar su perfil y recibir recomendaciones dinámicas.
+
+---
+
+## 🏗️ Arquitectura del Sistema
+
+1. **Visión por Computadora**: YOLO para detección de alimentos.
+2. **Procesamiento de Imágenes**: OpenCV.
+3. **Backend Web**: Flask.
+4. **Sistema Experto**: Reglas nutricionales y base de conocimiento.
+5. **Interfaz Web**: Visualización del video y recomendaciones.
+
+---
+
+## 🛠️ Herramientas y Tecnologías Utilizadas
+
+- **Python** – Lenguaje principal del proyecto.
+- **YOLO (Ultralytics)** – Detección de objetos en tiempo real.
+- **OpenCV** – Procesamiento de imágenes y video.
+- **Flask** – Desarrollo de la aplicación web.
+- **Flask-SocketIO** – Comunicación en tiempo real.
+- **HTML/CSS/JavaScript** – Interfaz de usuario.
+
+---
+
+## 🚀 Ejecución del Proyecto
+
+1. Clonar el repositorio:
+   ```bash
+   git clone https://github.com/EduardoGarcia270402/RealTimeFoodDetection.git
+
+Install dependencies: pip install -r requirements.txt
+Run the application: python app.py
+Navigate to http://localhost:5000/
